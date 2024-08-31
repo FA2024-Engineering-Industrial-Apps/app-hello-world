@@ -73,6 +73,15 @@ To start the scenario, follow these steps:
    - **Username**: `edge`
    - **Password**: `edgeadmin`
 
+5. **Import Dashboard**
+
+   To view the material usage, you need to first import a pre-built dashboard which displays the data.
+   
+   1. To do this, start by navigating to the `Dashboards` page.
+   2. Click on `Create Dashboard`.
+   3. Choose `Import Dashboard` from the dropdown menu.
+   4. Select our pre-build dashboard located at `src/my_edge_app/influxDB/components_dashboard.json`.
+
    This dashboard will display the real-time data being sent by Node-RED from the MQTT bus.
 
 ## License
