@@ -1,18 +1,35 @@
+version: '2.4' # docker-compose version is set to 2.4 
+
 services:
+
+###### PICK-AND-PLACE-MACHINE ######
   pick-and-place-machine:
     build:
       context: ./machine_test_double
-      dockerfile: Dockerfile
+      args:
+        BASE_IMAGE: $BASE_IMAGE         # 
+        http_proxy: $http_proxy         # Proxy url's from environment
+        https_proxy: $https_proxy
     container_name: pick-and-place-machine
-    depends_on:
-      - mqtt-broker
+    mem_limit: 350m
+    restart: unless-stopped             # always restarts (see overview page 12 Industrial Edge Developer Guide)
+    environment:                        # Environment variables available at container run-time
+      http_proxy: $http_proxy           # Proxy url's from environment
+      https_proxy: $https_proxy
+    logging:                            # allow logging
+      options:                          # we use best pactice here as limiting file size and rolling mechanism
+        max-size: "10m"                 # File size is 10MB
+        max-file: "2"                   # only 2 files created before rolling mechanism applies
+    networks:                           # define networks connected to container 'data-analytics' 
+      proxy-redirect:                   # Name of the network
 
-  mqtt-broker:
-    image: eclipse-mosquitto:1.6.14
-    container_name: ie-databus
-    ports:
-      - "1883:1883"
-    volumes:
-      - ./mosquitto/config:/mosquitto/config
-      - ./mosquitto/data:/mosquitto/data
-      - ./mosquitto/log:/mosquitto/log
+###### NETWORK CONFIG ######
+networks:                           # Network interface configuration
+  proxy-redirect:                   # Reference 'proxy-redirect' as predefined network
+    external: 
+      name: proxy-redirect
+    driver: bridge
+
+###### VOLUMES ######
+volumes:                            # Volumes for containers
+  db-backup:
