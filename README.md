@@ -53,9 +53,21 @@ To start the scenario, follow these steps:
    sudo ./start_environment.sh
    ```
 
-3. **Access the InfluxDB Dashboard**
+3. **Configure Node RED**
 
-   Once the containers are up and running, you can log in to the InfluxDB dashboard to monitor the material usage:
+   Once the containers are running, you need to set up Node RED to forward the data to InfluxDB.
+   To do this go to [http://localhost:38080](http://localhost:38080).
+
+   1. Open the menu in the right top corner.
+   2. Click on `Configuration Nodes`.
+   3. Double click on the InfluxDB node under `On all flows`. You should see a window open with different configuration parameters.
+   4. Set the `Token` to `testtoken`.
+   5. Click `Update` to finalize the changes.
+   6. Close the configuration window and hit `Deploy` in the top right corner.
+
+4. **Access the InfluxDB Dashboard**
+
+   Once everything is running and configured, you can log in to the InfluxDB dashboard to monitor the material usage:
 
    - **URL**: [http://localhost:38086](http://localhost:38086)
    - **Username**: `edge`
