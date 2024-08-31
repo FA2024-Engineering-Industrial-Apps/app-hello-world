@@ -132,5 +132,10 @@ class DataAnalyzer():
             self.logger.info('Finished subscription to topics')
             
 
-        except Exception as e:
-            self.logger.error(str(e))
+        except Excep
+if __name__ == '__main__':
+    # configures basic logger
+    logger = logging.getLogger( __name__ )
+    logger.setLevel(logging.INFO)
+
+
