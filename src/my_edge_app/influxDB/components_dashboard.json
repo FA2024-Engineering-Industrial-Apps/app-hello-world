@@ -1,300 +1,266 @@
 {
-    "meta": {
-      "version": "1",
-      "type": "dashboard",
-      "name": "Components in Stock-Template",
-      "description": "template created from dashboard: Components in Stock"
+ "meta": {
+  "version": "1",
+  "type": "dashboard",
+  "name": "Components in Stock-Template",
+  "description": "template created from dashboard: Components in Stock"
+ },
+ "content": {
+  "data": {
+   "type": "dashboard",
+   "attributes": {
+    "name": "Components in Stock",
+    "description": ""
+   },
+   "relationships": {
+    "label": {
+     "data": []
     },
-    "content": {
-      "data": {
-        "type": "dashboard",
-        "attributes": {
-          "name": "Components in Stock",
-          "description": ""
-        },
-        "relationships": {
-          "label": {
-            "data": []
-          },
-          "cell": {
-            "data": [
-              {
-                "type": "cell",
-                "id": "0d962b072ac5f000"
-              },
-              {
-                "type": "cell",
-                "id": "0d962c99dbc5f000"
-              },
-              {
-                "type": "cell",
-                "id": "0d962ce2fa05f000"
-              },
-              {
-                "type": "cell",
-                "id": "0d962d21ab05f000"
-              }
-            ]
-          },
-          "variable": {
-            "data": []
-          }
-        }
+    "cell": {
+     "data": [
+      {
+       "type": "cell",
+       "id": "0d962e02204ce000"
       },
-      "included": [
-        {
-          "id": "0d962b072ac5f000",
-          "type": "cell",
-          "attributes": {
-            "x": 3,
-            "y": 0,
-            "w": 3,
-            "h": 2
-          },
-          "relationships": {
-            "view": {
-              "data": {
-                "type": "view",
-                "id": "0d962b072ac5f000"
-              }
-            }
-          }
-        },
-        {
-          "id": "0d962c99dbc5f000",
-          "type": "cell",
-          "attributes": {
-            "x": 0,
-            "y": 0,
-            "w": 3,
-            "h": 6
-          },
-          "relationships": {
-            "view": {
-              "data": {
-                "type": "view",
-                "id": "0d962c99dbc5f000"
-              }
-            }
-          }
-        },
-        {
-          "id": "0d962ce2fa05f000",
-          "type": "cell",
-          "attributes": {
-            "x": 9,
-            "y": 0,
-            "w": 3,
-            "h": 2
-          },
-          "relationships": {
-            "view": {
-              "data": {
-                "type": "view",
-                "id": "0d962ce2fa05f000"
-              }
-            }
-          }
-        },
-        {
-          "id": "0d962d21ab05f000",
-          "type": "cell",
-          "attributes": {
-            "x": 6,
-            "y": 0,
-            "w": 3,
-            "h": 2
-          },
-          "relationships": {
-            "view": {
-              "data": {
-                "type": "view",
-                "id": "0d962d21ab05f000"
-              }
-            }
-          }
-        },
-        {
-          "type": "view",
-          "id": "0d962b072ac5f000",
-          "attributes": {
-            "name": "Count of Transistors",
-            "properties": {
-              "shape": "chronograf-v2",
-              "type": "single-stat",
-              "queries": [
-                {
-                  "text": "from(bucket: \"edgedb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"TRANSISTORS_LEFT\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> aggregateWindow(every: 1s, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
-                  "editMode": "advanced",
-                  "name": "",
-                  "builderConfig": {
-                    "buckets": [],
-                    "tags": [
-                      {
-                        "key": "_measurement",
-                        "values": [],
-                        "aggregateFunctionType": "filter"
-                      }
-                    ],
-                    "functions": [
-                      {
-                        "name": "mean"
-                      }
-                    ],
-                    "aggregateWindow": {
-                      "period": "auto",
-                      "fillValues": false
-                    }
-                  }
-                }
-              ],
-              "prefix": "",
-              "tickPrefix": "",
-              "suffix": "",
-              "tickSuffix": "",
-              "colors": [
-                {
-                  "id": "base",
-                  "type": "text",
-                  "hex": "#00C9FF",
-                  "name": "laser",
-                  "value": 0
-                }
-              ],
-              "decimalPlaces": {
-                "isEnforced": true,
-                "digits": 2
-              },
-              "note": "",
-              "showNoteWhenEmpty": false
-            }
-          }
-        },
-        {
-          "type": "view",
-          "id": "0d962c99dbc5f000",
-          "attributes": {
-            "name": "Name this Cell",
-            "properties": {
-              "shape": "chronograf-v2",
-              "type": "markdown",
-              "note": "## Dashboard\n\nDepicts the current number of Components in the Pick and Place machine"
-            }
-          }
-        },
-        {
-          "type": "view",
-          "id": "0d962ce2fa05f000",
-          "attributes": {
-            "name": "Count of Capacitors",
-            "properties": {
-              "shape": "chronograf-v2",
-              "type": "single-stat",
-              "queries": [
-                {
-                  "text": "from(bucket: \"edgedb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"TRANSISTORS_LEFT\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
-                  "editMode": "advanced",
-                  "name": "",
-                  "builderConfig": {
-                    "buckets": [],
-                    "tags": [
-                      {
-                        "key": "_measurement",
-                        "values": [],
-                        "aggregateFunctionType": "filter"
-                      }
-                    ],
-                    "functions": [
-                      {
-                        "name": "mean"
-                      }
-                    ],
-                    "aggregateWindow": {
-                      "period": "auto",
-                      "fillValues": false
-                    }
-                  }
-                }
-              ],
-              "prefix": "",
-              "tickPrefix": "",
-              "suffix": "",
-              "tickSuffix": "",
-              "colors": [
-                {
-                  "id": "base",
-                  "type": "text",
-                  "hex": "#00C9FF",
-                  "name": "laser",
-                  "value": 0
-                }
-              ],
-              "decimalPlaces": {
-                "isEnforced": true,
-                "digits": 2
-              },
-              "note": "",
-              "showNoteWhenEmpty": false
-            }
-          }
-        },
-        {
-          "type": "view",
-          "id": "0d962d21ab05f000",
-          "attributes": {
-            "name": "Name this Cell",
-            "properties": {
-              "shape": "chronograf-v2",
-              "type": "single-stat",
-              "queries": [
-                {
-                  "text": "from(bucket: \"edgedb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"TRANSISTORS_LEFT\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
-                  "editMode": "advanced",
-                  "name": "",
-                  "builderConfig": {
-                    "buckets": [],
-                    "tags": [
-                      {
-                        "key": "_measurement",
-                        "values": [],
-                        "aggregateFunctionType": "filter"
-                      }
-                    ],
-                    "functions": [
-                      {
-                        "name": "mean"
-                      }
-                    ],
-                    "aggregateWindow": {
-                      "period": "auto",
-                      "fillValues": false
-                    }
-                  }
-                }
-              ],
-              "prefix": "",
-              "tickPrefix": "",
-              "suffix": "",
-              "tickSuffix": "",
-              "colors": [
-                {
-                  "id": "base",
-                  "type": "text",
-                  "hex": "#00C9FF",
-                  "name": "laser",
-                  "value": 0
-                }
-              ],
-              "decimalPlaces": {
-                "isEnforced": true,
-                "digits": 2
-              },
-              "note": "",
-              "showNoteWhenEmpty": false
-            }
-          }
-        }
-      ]
+      {
+       "type": "cell",
+       "id": "0d962e02208ce000"
+      },
+      {
+       "type": "cell",
+       "id": "0d962e02214ce000"
+      }
+     ]
     },
-    "labels": []
-  }
+    "variable": {
+     "data": []
+    }
+   }
+  },
+  "included": [
+   {
+    "id": "0d962e02204ce000",
+    "type": "cell",
+    "attributes": {
+     "x": 0,
+     "y": 0,
+     "w": 3,
+     "h": 2
+    },
+    "relationships": {
+     "view": {
+      "data": {
+       "type": "view",
+       "id": "0d962e02204ce000"
+      }
+     }
+    }
+   },
+   {
+    "id": "0d962e02208ce000",
+    "type": "cell",
+    "attributes": {
+     "x": 6,
+     "y": 0,
+     "w": 3,
+     "h": 2
+    },
+    "relationships": {
+     "view": {
+      "data": {
+       "type": "view",
+       "id": "0d962e02208ce000"
+      }
+     }
+    }
+   },
+   {
+    "id": "0d962e02214ce000",
+    "type": "cell",
+    "attributes": {
+     "x": 3,
+     "y": 0,
+     "w": 3,
+     "h": 2
+    },
+    "relationships": {
+     "view": {
+      "data": {
+       "type": "view",
+       "id": "0d962e02214ce000"
+      }
+     }
+    }
+   },
+   {
+    "type": "view",
+    "id": "0d962e02204ce000",
+    "attributes": {
+     "name": "Transistors Left",
+     "properties": {
+      "shape": "chronograf-v2",
+      "type": "single-stat",
+      "queries": [
+       {
+        "text": "from(bucket: \"edgedb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"TRANSISTORS_LEFT\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> aggregateWindow(every: 1s, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+        "editMode": "advanced",
+        "name": "",
+        "builderConfig": {
+         "buckets": [],
+         "tags": [
+          {
+           "key": "_measurement",
+           "values": [],
+           "aggregateFunctionType": "filter"
+          }
+         ],
+         "functions": [
+          {
+           "name": "mean"
+          }
+         ],
+         "aggregateWindow": {
+          "period": "auto",
+          "fillValues": false
+         }
+        }
+       }
+      ],
+      "prefix": "",
+      "tickPrefix": "",
+      "suffix": "",
+      "tickSuffix": "",
+      "colors": [
+       {
+        "id": "base",
+        "type": "text",
+        "hex": "#00C9FF",
+        "name": "laser",
+        "value": 0
+       }
+      ],
+      "decimalPlaces": {
+       "isEnforced": true,
+       "digits": 0
+      },
+      "note": "",
+      "showNoteWhenEmpty": false
+     }
+    }
+   },
+   {
+    "type": "view",
+    "id": "0d962e02208ce000",
+    "attributes": {
+     "name": "Resistors Left",
+     "properties": {
+      "shape": "chronograf-v2",
+      "type": "single-stat",
+      "queries": [
+       {
+        "text": "from(bucket: \"edgedb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"RESISTORS_LEFT\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+        "editMode": "advanced",
+        "name": "",
+        "builderConfig": {
+         "buckets": [],
+         "tags": [
+          {
+           "key": "_measurement",
+           "values": [],
+           "aggregateFunctionType": "filter"
+          }
+         ],
+         "functions": [
+          {
+           "name": "mean"
+          }
+         ],
+         "aggregateWindow": {
+          "period": "auto",
+          "fillValues": false
+         }
+        }
+       }
+      ],
+      "prefix": "",
+      "tickPrefix": "",
+      "suffix": "",
+      "tickSuffix": "",
+      "colors": [
+       {
+        "id": "base",
+        "type": "text",
+        "hex": "#00C9FF",
+        "name": "laser",
+        "value": 0
+       }
+      ],
+      "decimalPlaces": {
+       "isEnforced": true,
+       "digits": 0
+      },
+      "note": "",
+      "showNoteWhenEmpty": false
+     }
+    }
+   },
+   {
+    "type": "view",
+    "id": "0d962e02214ce000",
+    "attributes": {
+     "name": "Capacitors Left",
+     "properties": {
+      "shape": "chronograf-v2",
+      "type": "single-stat",
+      "queries": [
+       {
+        "text": "from(bucket: \"edgedb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"CAPACITORS_LEFT\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+        "editMode": "advanced",
+        "name": "",
+        "builderConfig": {
+         "buckets": [],
+         "tags": [
+          {
+           "key": "_measurement",
+           "values": [],
+           "aggregateFunctionType": "filter"
+          }
+         ],
+         "functions": [
+          {
+           "name": "mean"
+          }
+         ],
+         "aggregateWindow": {
+          "period": "auto",
+          "fillValues": false
+         }
+        }
+       }
+      ],
+      "prefix": "",
+      "tickPrefix": "",
+      "suffix": "",
+      "tickSuffix": "",
+      "colors": [
+       {
+        "id": "base",
+        "type": "text",
+        "hex": "#00C9FF",
+        "name": "laser",
+        "value": 0
+       }
+      ],
+      "decimalPlaces": {
+       "isEnforced": true,
+       "digits": 0
+      },
+      "note": "",
+      "showNoteWhenEmpty": false
+     }
+    }
+   }
+  ]
+ },
+ "labels": []
+}
