@@ -1,0 +1,980 @@
+[
+  {
+    "id": "f7e739bb.370638",
+    "type": "tab",
+    "label": "KPI Estimation",
+    "disabled": false,
+    "info": ""
+  },
+  {
+    "id": "3aa68cd31f41e50a",
+    "type": "tab",
+    "label": "InfluxDB Communicator",
+    "disabled": false,
+    "info": "",
+    "env": []
+  },
+  {
+    "id": "b6ec4c8d.61eac",
+    "type": "mqtt-broker",
+    "name": "",
+    "broker": "mqtt-broker",
+    "port": "1883",
+    "clientid": "nodered-client",
+    "usetls": false,
+    "compatmode": true,
+    "keepalive": "60",
+    "cleansession": true,
+    "birthTopic": "",
+    "birthQos": "0",
+    "birthPayload": "",
+    "closeTopic": "",
+    "closeQos": "0",
+    "closePayload": "",
+    "willTopic": "",
+    "willQos": "0",
+    "willPayload": ""
+  },
+  {
+    "id": "4ad3ce8d.582c5",
+    "type": "influxdb",
+    "hostname": "influxdb",
+    "port": "8086",
+    "protocol": "http",
+    "database": "edgedb",
+    "name": "",
+    "usetls": false,
+    "tls": "",
+    "influxdbVersion": "2.0",
+    "url": "http://influxdb:8086",
+    "rejectUnauthorized": false
+  },
+  {
+    "id": "99d8c9c3d94c327e",
+    "type": "OpcUa-Endpoint",
+    "endpoint": "opc.tcp://opc-server:4841",
+    "secpol": "Basic256",
+    "secmode": "SIGN",
+    "none": true,
+    "login": false,
+    "usercert": false,
+    "usercertificate": "",
+    "userprivatekey": ""
+  },
+  {
+    "id": "13ee085f.be8d98",
+    "type": "influxdb in",
+    "z": "f7e739bb.370638",
+    "influxdb": "4ad3ce8d.582c5",
+    "name": "query",
+    "query": "",
+    "rawOutput": false,
+    "precision": "",
+    "retentionPolicy": "",
+    "org": "siemens",
+    "x": 850,
+    "y": 160,
+    "wires": [
+      [
+        "5e1cdcc5.cf69a4"
+      ]
+    ]
+  },
+  {
+    "id": "69401cb2.ee9d44",
+    "type": "debug",
+    "z": "f7e739bb.370638",
+    "name": "count",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "x": 610,
+    "y": 120,
+    "wires": []
+  },
+  {
+    "id": "84d99c19.67892",
+    "type": "link in",
+    "z": "f7e739bb.370638",
+    "name": "input_raw_data",
+    "links": [
+      "edc207be.ce696",
+      "0c7cbde017b44877"
+    ],
+    "x": 55,
+    "y": 160,
+    "wires": [
+      [
+        "b64620ac.81fd3"
+      ]
+    ]
+  },
+  {
+    "id": "c231c8cd.975aa",
+    "type": "influxdb in",
+    "z": "f7e739bb.370638",
+    "influxdb": "4ad3ce8d.582c5",
+    "name": "query",
+    "query": "",
+    "rawOutput": false,
+    "precision": "",
+    "retentionPolicy": "",
+    "org": "siemens",
+    "x": 450,
+    "y": 160,
+    "wires": [
+      [
+        "69401cb2.ee9d44",
+        "9d60b753.7fcfc"
+      ]
+    ]
+  },
+  {
+    "id": "3a59b4bb.74773c",
+    "type": "function",
+    "z": "f7e739bb.370638",
+    "name": "COUNT",
+    "func": "msgQueryCount = {}\nmsgQueryCount.measurement = msg.payload[0].measurement\n//msgQueryCount.query = 'SELECT COUNT(\"value\") FROM ' + msg.payload[0].measurement\n\nmsgQueryCount.query= `from(bucket: \"edgedb\")\n  |> range(start: -5h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"powerdrive1\" or r[\"_measurement\"] == \"powerdrive2\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> count()`;\nreturn msgQueryCount;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "x": 300,
+    "y": 160,
+    "wires": [
+      [
+        "c231c8cd.975aa"
+      ]
+    ]
+  },
+  {
+    "id": "9d60b753.7fcfc",
+    "type": "function",
+    "z": "f7e739bb.370638",
+    "name": "GET_LAST_ENTRIES",
+    "func": "msgQueryGet = {}\nmsgQueryGet.measurement = msg.measurement\nif (msg.payload[0]._value >= 50) {\n    //msgQueryGet.query = 'SELECT * FROM ' + msg.measurement + ' ORDER BY time DESC limit 50'\n    msgQueryGet.query= `from(bucket: \"edgedb\")\n                      |> range(start: -5h)\n                      |> filter(fn: (r) => r[\"_measurement\"] == \"${msg.measurement}\")\n                      |> filter(fn: (r) => r[\"_field\"] == \"value\")\n                      |> sort(columns: [\"_time\"], desc: true)\n                      |> limit(n: 50)\n                      |> group()`;\n    return msgQueryGet;\n}\n\nelse {msgQueryGet.query= `from(bucket: \"edgedb\")\n              |> range(start: -5h)\n              |> filter(fn: (r) => r[\"_measurement\"] == \"${msg.measurement}\")\n              |> filter(fn: (r) => r[\"_field\"] == \"value\")\n              |> sort(columns: [\"_time\"], desc: true)\n              |> group()`;\n    return msgQueryGet;\n    \n}\n\n\n",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "x": 660,
+    "y": 160,
+    "wires": [
+      [
+        "13ee085f.be8d98"
+      ]
+    ]
+  },
+  {
+    "id": "c561e0d7.eb0998",
+    "type": "comment",
+    "z": "f7e739bb.370638",
+    "name": "### check if measurement has enough entries and get last 5 values if true",
+    "info": "",
+    "x": 320,
+    "y": 20,
+    "wires": []
+  },
+  {
+    "id": "7000bdea.5b3c8c",
+    "type": "mqtt out",
+    "z": "f7e739bb.370638",
+    "name": "StandardKpis",
+    "topic": "StandardKpis",
+    "qos": "",
+    "retain": "",
+    "broker": "b6ec4c8d.61eac",
+    "x": 1220,
+    "y": 160,
+    "wires": []
+  },
+  {
+    "id": "5e1cdcc5.cf69a4",
+    "type": "json",
+    "z": "f7e739bb.370638",
+    "name": "",
+    "property": "payload",
+    "action": "obj",
+    "pretty": false,
+    "x": 990,
+    "y": 160,
+    "wires": [
+      [
+        "408593f2.7ce534",
+        "7000bdea.5b3c8c"
+      ]
+    ]
+  },
+  {
+    "id": "408593f2.7ce534",
+    "type": "debug",
+    "z": "f7e739bb.370638",
+    "name": "response_get",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 1220,
+    "y": 220,
+    "wires": []
+  },
+  {
+    "id": "51e1820.ff6d8fc",
+    "type": "comment",
+    "z": "f7e739bb.370638",
+    "name": "PowerDrive1 and PowerDrive2 last 50 entries",
+    "info": "",
+    "x": 210,
+    "y": 80,
+    "wires": []
+  },
+  {
+    "id": "cc9de0f5.cdc4e",
+    "type": "influxdb in",
+    "z": "f7e739bb.370638",
+    "influxdb": "4ad3ce8d.582c5",
+    "name": "query",
+    "query": "",
+    "rawOutput": false,
+    "precision": "",
+    "retentionPolicy": "",
+    "org": "siemens",
+    "x": 830,
+    "y": 400,
+    "wires": [
+      [
+        "67b35a2b.c82f54"
+      ]
+    ]
+  },
+  {
+    "id": "b55ad1ad.1d31e8",
+    "type": "debug",
+    "z": "f7e739bb.370638",
+    "name": "mqtt output",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 1340,
+    "y": 460,
+    "wires": []
+  },
+  {
+    "id": "6e9cf99d.f4721",
+    "type": "influxdb in",
+    "z": "f7e739bb.370638",
+    "influxdb": "4ad3ce8d.582c5",
+    "name": "query",
+    "query": "from(bucket: \"edgedb\")\n  |> range(start: -5h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"voltagedrive3\" and (r[\"_field\"] == \"value\"))\n  |> count()",
+    "rawOutput": false,
+    "precision": "",
+    "retentionPolicy": "",
+    "org": "siemens",
+    "x": 370,
+    "y": 400,
+    "wires": [
+      [
+        "e0680050.bd51a",
+        "d40d07c0.067dc8"
+      ]
+    ]
+  },
+  {
+    "id": "e0680050.bd51a",
+    "type": "function",
+    "z": "f7e739bb.370638",
+    "name": "GET_LAST_ENTRIES",
+    "func": "// gets the value of n, if not yet set takes default value 50\nvar n = context.get('sample_n')|| 50;\n\n\n    \n    msgQueryGet = {}\n    //msgQueryGet.measurement = msg.measurement\n    msgQueryGet.measurement = 'voltagedrive3'\n    if (msg.payload[0]._value >= n) {\n        msgQueryGet.SampleNumber = n\n        //msgQueryGet.query = 'SELECT \"value\" FROM voltagedrive3 ORDER BY time DESC limit ' + n\n        msgQueryGet.query= `from(bucket: \"edgedb\")\n                  |> range(start: -5h)\n                  |> filter(fn: (r) => r[\"_measurement\"] == \"voltagedrive3\" and (r[\"_field\"] == \"value\"))\n                  |> sort(columns: [\"_time\"], desc: true)\n                  |> limit(n: 50)`;\n        //msgQueryGet.query = 'SELECT \"value\" FROM ' + msg.measurement + ' limit ' + n\n        return msgQueryGet;\n    }\n    else {\n    msgQueryGet.SampleNumber = n\n    msgQueryGet.query= `from(bucket: \"edgedb\")\n              |> range(start: -5h)\n              |> filter(fn: (r) => r[\"_measurement\"] == \"voltagedrive3\" and (r[\"_field\"] == \"value\"))\n              |> sort(columns: [\"_time\"], desc: true)`;\n        return msgQueryGet;\n    }",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "x": 600,
+    "y": 400,
+    "wires": [
+      [
+        "cc9de0f5.cdc4e",
+        "67cd84cb.b3012c"
+      ]
+    ]
+  },
+  {
+    "id": "206e8e74.bad04a",
+    "type": "mqtt out",
+    "z": "f7e739bb.370638",
+    "name": "Mean",
+    "topic": "Mean",
+    "qos": "",
+    "retain": "",
+    "broker": "b6ec4c8d.61eac",
+    "x": 1320,
+    "y": 500,
+    "wires": []
+  },
+  {
+    "id": "587d20bd.56fc1",
+    "type": "comment",
+    "z": "f7e739bb.370638",
+    "name": "VoltageDrive3 dynamic sample of entries",
+    "info": "",
+    "x": 490,
+    "y": 360,
+    "wires": []
+  },
+  {
+    "id": "d73768e8.892c4",
+    "type": "influxdb in",
+    "z": "f7e739bb.370638",
+    "influxdb": "4ad3ce8d.582c5",
+    "name": "query",
+    "query": "",
+    "rawOutput": false,
+    "precision": "",
+    "retentionPolicy": "",
+    "org": "siemens",
+    "x": 810,
+    "y": 600,
+    "wires": [
+      [
+        "67b35a2b.c82f54"
+      ]
+    ]
+  },
+  {
+    "id": "30279058.935348",
+    "type": "influxdb in",
+    "z": "f7e739bb.370638",
+    "influxdb": "4ad3ce8d.582c5",
+    "name": "query",
+    "query": "from(bucket: \"edgedb\")\n  |> range(start: -5h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"currentdrive3\" and (r[\"_field\"] == \"value\"))\n  |> count()",
+    "rawOutput": false,
+    "precision": "",
+    "retentionPolicy": "",
+    "org": "siemens",
+    "x": 370,
+    "y": 600,
+    "wires": [
+      [
+        "e483dac2.b82e5"
+      ]
+    ]
+  },
+  {
+    "id": "e483dac2.b82e5",
+    "type": "function",
+    "z": "f7e739bb.370638",
+    "name": "GET_LAST_ENTRIES",
+    "func": "\n\n// gets the value of n, if not yet set takes default value 50\nvar n = context.get('sample_n')|| 50;\n\n\n    \n    msgQueryGet = {}\n    //msgQueryGet.measurement = msg.measurement\n    msgQueryGet.measurement = 'currentdrive3'\n    if (msg.payload[0]._value >= n) {\n        msgQueryGet.SampleNumber = n\n        //msgQueryGet.query = 'SELECT \"value\" FROM currentdrive3 ORDER BY time DESC limit ' + n\n        msgQueryGet.query= `from(bucket: \"edgedb\")\n          |> range(start: -5h)\n          |> filter(fn: (r) => r[\"_measurement\"] == \"currentdrive3\" and (r[\"_field\"] == \"value\"))\n          |> sort(columns: [\"_time\"], desc: true)\n          |> limit(n: 50)`;\n        //msgQueryGet.query = 'SELECT \"value\" FROM ' + msg.measurement + ' limit ' + n\n        return msgQueryGet;\n    }\n    else {\n    msgQueryGet.SampleNumber = n\n    msgQueryGet.query= `from(bucket: \"edgedb\")\n              |> range(start: -5h)\n              |> filter(fn: (r) => r[\"_measurement\"] == \"currentdrive3\" and (r[\"_field\"] == \"value\"))\n              |> sort(columns: [\"_time\"], desc: true)`;\n        return msgQueryGet;\n    }",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "x": 600,
+    "y": 600,
+    "wires": [
+      [
+        "d73768e8.892c4"
+      ]
+    ]
+  },
+  {
+    "id": "fe2bcb9b.e56fb8",
+    "type": "comment",
+    "z": "f7e739bb.370638",
+    "name": "CurrentDrive3  dynamic sample of entries",
+    "info": "",
+    "x": 490,
+    "y": 640,
+    "wires": []
+  },
+  {
+    "id": "b64620ac.81fd3",
+    "type": "switch",
+    "z": "f7e739bb.370638",
+    "name": "filter",
+    "property": "payload[0].measurement",
+    "propertyType": "msg",
+    "rules": [
+      {
+        "t": "eq",
+        "v": "powerdrive1",
+        "vt": "str"
+      },
+      {
+        "t": "eq",
+        "v": "powerdrive2",
+        "vt": "str"
+      },
+      {
+        "t": "eq",
+        "v": "voltagedrive3",
+        "vt": "str"
+      },
+      {
+        "t": "eq",
+        "v": "currentdrive3",
+        "vt": "str"
+      }
+    ],
+    "checkall": "true",
+    "repair": false,
+    "outputs": 4,
+    "x": 150,
+    "y": 160,
+    "wires": [
+      [
+        "3a59b4bb.74773c"
+      ],
+      [
+        "3a59b4bb.74773c"
+      ],
+      [
+        "6e9cf99d.f4721",
+        "4d240511.3cb51c"
+      ],
+      [
+        "30279058.935348"
+      ]
+    ]
+  },
+  {
+    "id": "67b35a2b.c82f54",
+    "type": "function",
+    "z": "f7e739bb.370638",
+    "name": "manual_join",
+    "func": "var tempo_cd3_batch = context.get('cd3_batch')||[];\nvar tempo_vd3_batch = context.get('vd3_batch')||[];\n\nfunction build_analytics_object(){\n    data_obj = {\n        sample_number : msg.SampleNumber,\n        current_drive3_batch : tempo_cd3_batch,\n        voltage_drive3_batch : tempo_vd3_batch,\n    }\n    return data_obj\n}\n\n\nif (msg.measurement == 'currentdrive3'){\n    tempo_cd3_batch = msg.payload\n    context.set('cd3_batch',tempo_cd3_batch)\n    \n}\nelse if (msg.measurement == 'voltagedrive3') {\n    tempo_vd3_batch = msg.payload\n    context.set('vd3_batch',tempo_vd3_batch)\n}\n\nif (tempo_cd3_batch.length > 0 && tempo_vd3_batch.length >0 ) {\n    py_obj={}\n    py_obj.payload = build_analytics_object()\n    tempo_cd3_batch = []\n    tempo_vd3_batch = []\n    context.set('cd3_batch', tempo_cd3_batch)\n    context.set('vd3_batch', tempo_vd3_batch)\n    \n    return py_obj\n    \n}\n\nelse{\n    return\n}",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "x": 1100,
+    "y": 500,
+    "wires": [
+      [
+        "b55ad1ad.1d31e8",
+        "206e8e74.bad04a"
+      ]
+    ]
+  },
+  {
+    "id": "49c977da.a0dce",
+    "type": "mqtt in",
+    "z": "f7e739bb.370638",
+    "name": "",
+    "topic": "StandardKpiResult",
+    "qos": "2",
+    "datatype": "auto",
+    "broker": "b6ec4c8d.61eac",
+    "nl": false,
+    "rap": false,
+    "inputs": 0,
+    "x": 130,
+    "y": 820,
+    "wires": [
+      [
+        "b119df7b.43a088"
+      ]
+    ]
+  },
+  {
+    "id": "f85bea86.d12e9",
+    "type": "debug",
+    "z": "f7e739bb.370638",
+    "name": "response standard kpis",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 1230,
+    "y": 780,
+    "wires": []
+  },
+  {
+    "id": "b119df7b.43a088",
+    "type": "json",
+    "z": "f7e739bb.370638",
+    "name": "",
+    "property": "payload",
+    "action": "",
+    "pretty": false,
+    "x": 510,
+    "y": 820,
+    "wires": [
+      [
+        "fbd3d4ca.35021"
+      ]
+    ]
+  },
+  {
+    "id": "fbd3d4ca.35021",
+    "type": "function",
+    "z": "f7e739bb.370638",
+    "name": "store data",
+    "func": "my_payload = {};\nmy_payload = msg.payload;\noutput_standardkpis = {}\noutput_standardkpis.measurement = my_payload.name.toUpperCase() + '_STANDARD_KPIS'\noutput_standardkpis.payload = {\n    mean: Math.round(my_payload.mean_result * 1e2)/ 1e2,\n    median: Math.round(my_payload.median_result * 1e2)/ 1e2,\n    stddev: Math.round(my_payload.stddev_result * 1e2)/ 1e2,\n    name: my_payload.name,\n}\n\nreturn output_standardkpis;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 870,
+    "y": 820,
+    "wires": [
+      [
+        "8736d8c4.6a8dd8",
+        "f85bea86.d12e9"
+      ]
+    ]
+  },
+  {
+    "id": "8736d8c4.6a8dd8",
+    "type": "influxdb out",
+    "z": "f7e739bb.370638",
+    "influxdb": "4ad3ce8d.582c5",
+    "name": "write_influxdb",
+    "measurement": "",
+    "precision": "",
+    "retentionPolicy": "",
+    "database": "",
+    "retentionPolicyV18Flux": "",
+    "org": "siemens",
+    "bucket": "edgedb",
+    "x": 1200,
+    "y": 820,
+    "wires": []
+  },
+  {
+    "id": "e09b497.2d66eb8",
+    "type": "mqtt in",
+    "z": "f7e739bb.370638",
+    "name": "",
+    "topic": "MeanResult",
+    "qos": "2",
+    "datatype": "auto",
+    "broker": "b6ec4c8d.61eac",
+    "inputs": 0,
+    "x": 110,
+    "y": 960,
+    "wires": [
+      [
+        "9fe01ff4.3223f"
+      ]
+    ]
+  },
+  {
+    "id": "e8bf4594.e0d068",
+    "type": "debug",
+    "z": "f7e739bb.370638",
+    "name": "response mean",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 1210,
+    "y": 920,
+    "wires": []
+  },
+  {
+    "id": "9fe01ff4.3223f",
+    "type": "json",
+    "z": "f7e739bb.370638",
+    "name": "",
+    "property": "payload",
+    "action": "",
+    "pretty": false,
+    "x": 510,
+    "y": 960,
+    "wires": [
+      [
+        "e9d5781f.cd3a1"
+      ]
+    ]
+  },
+  {
+    "id": "e9d5781f.cd3a1",
+    "type": "function",
+    "z": "f7e739bb.370638",
+    "name": "store data",
+    "func": "my_payload = {};\nmy_payload = msg.payload;\noutput_pd1_mean = {}\noutput_pd1_mean.measurement = my_payload.name.toUpperCase()\noutput_pd1_mean.payload = {\n    value: Math.round(my_payload.power_mean_result * 1e2)/ 1e2,\n    name: my_payload.name,\n}\n\nreturn output_pd1_mean;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 870,
+    "y": 960,
+    "wires": [
+      [
+        "36636dbd.e80eda",
+        "e8bf4594.e0d068"
+      ]
+    ]
+  },
+  {
+    "id": "36636dbd.e80eda",
+    "type": "influxdb out",
+    "z": "f7e739bb.370638",
+    "influxdb": "4ad3ce8d.582c5",
+    "name": "write_influxdb",
+    "measurement": "",
+    "precision": "",
+    "retentionPolicy": "",
+    "database": "",
+    "retentionPolicyV18Flux": "",
+    "org": "siemens",
+    "bucket": "edgedb",
+    "x": 1200,
+    "y": 960,
+    "wires": []
+  },
+  {
+    "id": "bb22a94d.81ee48",
+    "type": "comment",
+    "z": "f7e739bb.370638",
+    "name": "Data Analytics Results",
+    "info": "",
+    "x": 540,
+    "y": 740,
+    "wires": []
+  },
+  {
+    "id": "4d240511.3cb51c",
+    "type": "debug",
+    "z": "f7e739bb.370638",
+    "name": "mqtt output",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 390,
+    "y": 280,
+    "wires": []
+  },
+  {
+    "id": "d40d07c0.067dc8",
+    "type": "debug",
+    "z": "f7e739bb.370638",
+    "name": "mqtt output",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 610,
+    "y": 300,
+    "wires": []
+  },
+  {
+    "id": "67cd84cb.b3012c",
+    "type": "debug",
+    "z": "f7e739bb.370638",
+    "name": "mqtt output",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 950,
+    "y": 300,
+    "wires": []
+  },
+  {
+    "id": "a69afb3dede21c3d",
+    "type": "mqtt in",
+    "z": "3aa68cd31f41e50a",
+    "name": "",
+    "topic": "raw_data/material_transistors_in_stock",
+    "qos": "1",
+    "datatype": "auto",
+    "broker": "b6ec4c8d.61eac",
+    "nl": false,
+    "rap": false,
+    "inputs": 0,
+    "x": 430,
+    "y": 180,
+    "wires": [
+      [
+        "0a39a540ad0ced51"
+      ]
+    ]
+  },
+  {
+    "id": "0a39a540ad0ced51",
+    "type": "json",
+    "z": "3aa68cd31f41e50a",
+    "name": "",
+    "property": "payload",
+    "action": "",
+    "pretty": false,
+    "x": 670,
+    "y": 180,
+    "wires": [
+      [
+        "ba3613d28484653e"
+      ]
+    ]
+  },
+  {
+    "id": "92cb9b5523e2d007",
+    "type": "influxdb out",
+    "z": "3aa68cd31f41e50a",
+    "influxdb": "4ad3ce8d.582c5",
+    "name": "write_influxdb",
+    "measurement": "",
+    "precision": "",
+    "retentionPolicy": "",
+    "database": "",
+    "retentionPolicyV18Flux": "",
+    "org": "siemens",
+    "bucket": "edgedb",
+    "x": 1020,
+    "y": 180,
+    "wires": []
+  },
+  {
+    "id": "80009f29d73828d7",
+    "type": "debug",
+    "z": "3aa68cd31f41e50a",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 1010,
+    "y": 260,
+    "wires": []
+  },
+  {
+    "id": "ba3613d28484653e",
+    "type": "function",
+    "z": "3aa68cd31f41e50a",
+    "name": "",
+    "func": "output_transistors_left = {}\noutput_transistors_left.measurement = \"TRANSISTORS_LEFT\"\noutput_transistors_left.payload = msg.payload\n\nreturn output_transistors_left",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 820,
+    "y": 180,
+    "wires": [
+      [
+        "80009f29d73828d7",
+        "92cb9b5523e2d007"
+      ]
+    ]
+  },
+  {
+    "id": "2efc4ec3c621966a",
+    "type": "mqtt in",
+    "z": "3aa68cd31f41e50a",
+    "name": "",
+    "topic": "raw_data/material_capacitors_in_stock",
+    "qos": "1",
+    "datatype": "auto",
+    "broker": "b6ec4c8d.61eac",
+    "nl": false,
+    "rap": false,
+    "inputs": 0,
+    "x": 430,
+    "y": 340,
+    "wires": [
+      [
+        "f6cd6002a3b06185"
+      ]
+    ]
+  },
+  {
+    "id": "f6cd6002a3b06185",
+    "type": "json",
+    "z": "3aa68cd31f41e50a",
+    "name": "",
+    "property": "payload",
+    "action": "",
+    "pretty": false,
+    "x": 670,
+    "y": 340,
+    "wires": [
+      [
+        "4a31003625d5fec6"
+      ]
+    ]
+  },
+  {
+    "id": "200d9c7ba2143e31",
+    "type": "influxdb out",
+    "z": "3aa68cd31f41e50a",
+    "influxdb": "4ad3ce8d.582c5",
+    "name": "write_influxdb",
+    "measurement": "",
+    "precision": "",
+    "retentionPolicy": "",
+    "database": "",
+    "retentionPolicyV18Flux": "",
+    "org": "siemens",
+    "bucket": "edgedb",
+    "x": 1020,
+    "y": 340,
+    "wires": []
+  },
+  {
+    "id": "6e349c712d6394de",
+    "type": "debug",
+    "z": "3aa68cd31f41e50a",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 1010,
+    "y": 420,
+    "wires": []
+  },
+  {
+    "id": "4a31003625d5fec6",
+    "type": "function",
+    "z": "3aa68cd31f41e50a",
+    "name": "",
+    "func": "output_capacitors_left = {}\noutput_capacitors_left.measurement = \"CAPACITORS_LEFT\"\noutput_capacitors_left.payload = msg.payload\n\nreturn output_capacitors_left",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 820,
+    "y": 340,
+    "wires": [
+      [
+        "6e349c712d6394de",
+        "200d9c7ba2143e31"
+      ]
+    ]
+  },
+  {
+    "id": "284c9022318e58ca",
+    "type": "mqtt in",
+    "z": "3aa68cd31f41e50a",
+    "name": "",
+    "topic": "raw_data/material_resistors_in_stock",
+    "qos": "1",
+    "datatype": "auto",
+    "broker": "b6ec4c8d.61eac",
+    "nl": false,
+    "rap": false,
+    "inputs": 0,
+    "x": 430,
+    "y": 500,
+    "wires": [
+      [
+        "75f9c00d4013dbec"
+      ]
+    ]
+  },
+  {
+    "id": "75f9c00d4013dbec",
+    "type": "json",
+    "z": "3aa68cd31f41e50a",
+    "name": "",
+    "property": "payload",
+    "action": "",
+    "pretty": false,
+    "x": 670,
+    "y": 500,
+    "wires": [
+      [
+        "88abe7a3ca91ffdf"
+      ]
+    ]
+  },
+  {
+    "id": "bedcb73dc9af2c90",
+    "type": "influxdb out",
+    "z": "3aa68cd31f41e50a",
+    "influxdb": "4ad3ce8d.582c5",
+    "name": "write_influxdb",
+    "measurement": "",
+    "precision": "",
+    "retentionPolicy": "",
+    "database": "",
+    "retentionPolicyV18Flux": "",
+    "org": "siemens",
+    "bucket": "edgedb",
+    "x": 1020,
+    "y": 500,
+    "wires": []
+  },
+  {
+    "id": "05c1ff0d8fd40bb0",
+    "type": "debug",
+    "z": "3aa68cd31f41e50a",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 1010,
+    "y": 580,
+    "wires": []
+  },
+  {
+    "id": "88abe7a3ca91ffdf",
+    "type": "function",
+    "z": "3aa68cd31f41e50a",
+    "name": "",
+    "func": "output_resistors_left = {}\noutput_resistors_left.measurement = \"RESISTORS_LEFT\"\noutput_resistors_left.payload = msg.payload\n\nreturn output_resistors_left",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 820,
+    "y": 500,
+    "wires": [
+      [
+        "05c1ff0d8fd40bb0",
+        "bedcb73dc9af2c90"
+      ]
+    ]
+  }
+]
