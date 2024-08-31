@@ -57,7 +57,7 @@ To start the scenario, follow these steps:
 
    Once the containers are up and running, you can log in to the InfluxDB dashboard to monitor the material usage:
 
-   - **URL**: [http://localhost:33080](http://localhost:33080)
+   - **URL**: [http://localhost:38086](http://localhost:38086)
    - **Username**: `edge`
    - **Password**: `edgeadmin`
 
