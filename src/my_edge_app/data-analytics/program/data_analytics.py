@@ -40,6 +40,7 @@ class DataAnalyzer():
         self.client.on_disconnect = self.on_disconnect
         self.client.on_subscribe = self.on_subscribe
         self.client.on_message = self.on_message
+        self.topic_callback = dict()
 
         # number of components
         self.n_capacitors = 50
@@ -53,19 +54,14 @@ class DataAnalyzer():
         if rc != 0:
             self.logger.warning('Connection ended unexpectedly from broker, error code {}'.format(rc))
 
-
     def on_subscribe(self, client, userdata, mid, granted_qos):
         
         self.logger.info('successfully subscribed ')
 
     def on_message(self, client, userdata, message):
         self.logger.info('New message received on topic: {}'.format(message.topic))
-        # print(message.payload)
-        # load = message.payload
-        new_msg = json.loads(message.payload)
-        self.logger.info('new message: {}'.format(new_msg))
         try:
-            self.topic_callback[message.topic](new_msg)
+            self.topic_callback[message.topic](message.payload)
         except Exception as err:
             self.logger.error('An error ocurred while hanlding new message of {}: {}'.format(message.topic, err))
 
@@ -78,45 +74,6 @@ class DataAnalyzer():
         """
         self.topic_callback.update({topic:callback})
         self.client.subscribe(topic)
-
-    # Callback function for MQTT topic 'StandardKpis'
-    def standard_kpis(self, payload):
-        values = [key['_value'] for key in payload]
-        name = [key['_measurement'] for key in payload]
-        self.logger.info('name is: {}'.format(name))
-        # Calculate standard KPIs
-        result = {
-            'mean_result' : statistics.mean(values),
-            'median_result' : statistics.median(values),
-            'stddev_result' : statistics.stdev(values),
-            'name' : payload[0]['_measurement'],
-        }
-        self.logger.info('mean calculated: {}'.format(statistics.mean(values)))
-        self.logger.info('median calculated: {}'.format(statistics.median(values)))
-        self.logger.info('stddev calculated: {} \n ======='.format(statistics.stdev(values)))
-        # publish results back on MQTT topic 'StandardKpiResult'
-        self.client.publish(topic='StandardKpiResult', payload=json.dumps(result))
-        return
-
-#   Callback function for MQTT topic 'Mean' subscription
-    def power_mean(self, payload):
-        self.logger.info('calculating power mean...')
-
-        current_values = [item['_value'] for item in payload['current_drive3_batch']]
-        voltage_values = [item['_value'] for item in payload['voltage_drive3_batch']]     
-        # Calculate mean of power 
-        power_batch_sum = sum([current*voltage for current, voltage in zip(current_values,voltage_values)])
-        
-        power_mean = round((power_batch_sum/payload['sample_number']),2)
-        self.logger.info("power mean result: {}\n".format(power_mean))
-
-        result = {
-            'power_mean_result' : power_mean,
-            'name' : 'powerdrive3_mean',
-        }
-        # publish result back on MQTT topic 'MeanResult'
-        self.client.publish(topic='MeanResult', payload=json.dumps(result))
-        return
     
     def material_consumption(self, payload):
         self.logger.info('calculating pick and place machine...')
@@ -157,13 +114,9 @@ class DataAnalyzer():
             self.client.username_pw_set(USERNAME, PASSWORD)
             self.client.connect(BROKER_ADDRESS)
             self.client.loop_start()
-            self.logger.info('Subscribe to topic StandardKpis')
+            self.logger.info('Subscribe to topic raw_data/material_consumption')
             self.subscribe(topic='raw_data/material_consumption', callback=self.material_consumption)
-            # self.subscribe(topic='StandardKpis', callback=self.standard_kpis)
-            self.logger.info('Subscripe to topic Mean')
-            self.subscribe(topic='Mean', callback=self.power_mean)
             self.logger.info('Finished subscription to topics')
-            
 
         except Exception as e:
             self.logger.error(str(e))
