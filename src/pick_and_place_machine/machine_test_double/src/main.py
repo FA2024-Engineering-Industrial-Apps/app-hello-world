@@ -15,7 +15,7 @@ PASSWORD = 'edge'
 # Define the topic you want to publish to
 TOPIC = 'raw_data/material_consumption'
 
-my_machine: PickAndPlaceMachine = PickAndPlaceMachine("My Machine", [("Transistor", 100), ("Capacitor", 100), ("Resistor", 100)])
+my_machine: PickAndPlaceMachine = PickAndPlaceMachine("My Machine", [("Transistor", 100), ("Capacitor", 200), ("Resistor", 300)])
 client: mqtt.Client = mqtt.Client(MICRO_SERVICE_NAME)
 
 def on_connect(client, userdata, flags, rc):
@@ -36,7 +36,8 @@ def send_material_used_msg(material_name : str, components_used : int) -> None:
     client.publish(TOPIC, payload=msg, qos=2)
 
 def refill_material_roll(material_name : str) -> None:
-    my_machine.refill_material(material_name, 100)
+    #my_machine.refill_material(material_name, 100)
+    pass
 
 def main():
     client.username_pw_set(USERNAME, PASSWORD)
