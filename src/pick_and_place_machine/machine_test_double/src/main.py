@@ -33,7 +33,7 @@ def on_subscribe(client, userdata, mid, granted_qos):
 
 def send_material_used_msg(material_name : str, components_used : int) -> None:
     msg = pickle.dumps((material_name, components_used))
-    client.publish(TOPIC, payload=msg, qos=1)
+    client.publish(TOPIC, payload=msg, qos=2)
 
 def refill_material_roll(material_name : str) -> None:
     my_machine.refill_material(material_name, 100)

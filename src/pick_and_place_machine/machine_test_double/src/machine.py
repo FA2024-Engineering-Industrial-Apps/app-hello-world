@@ -53,6 +53,8 @@ class PickAndPlaceMachine:
 
                     if self._material_used_event_handler != None:
                         self._material_used_event_handler(current_material, 1)
+                        
+                time.sleep(5)
 
             if self._material_roll_empty_event_handler != None:
                 for material, roll in self._materials.items():
