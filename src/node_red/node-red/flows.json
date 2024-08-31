@@ -74,7 +74,11 @@
     "org": "siemens",
     "x": 850,
     "y": 160,
-    "wires": [["5e1cdcc5.cf69a4"]]
+    "wires": [
+      [
+        "5e1cdcc5.cf69a4"
+      ]
+    ]
   },
   {
     "id": "69401cb2.ee9d44",
@@ -96,10 +100,17 @@
     "type": "link in",
     "z": "f7e739bb.370638",
     "name": "input_raw_data",
-    "links": ["edc207be.ce696", "0c7cbde017b44877"],
+    "links": [
+      "edc207be.ce696",
+      "0c7cbde017b44877"
+    ],
     "x": 55,
     "y": 160,
-    "wires": [["b64620ac.81fd3"]]
+    "wires": [
+      [
+        "b64620ac.81fd3"
+      ]
+    ]
   },
   {
     "id": "c231c8cd.975aa",
@@ -114,7 +125,12 @@
     "org": "siemens",
     "x": 450,
     "y": 160,
-    "wires": [["69401cb2.ee9d44", "9d60b753.7fcfc"]]
+    "wires": [
+      [
+        "69401cb2.ee9d44",
+        "9d60b753.7fcfc"
+      ]
+    ]
   },
   {
     "id": "3a59b4bb.74773c",
@@ -128,7 +144,11 @@
     "finalize": "",
     "x": 300,
     "y": 160,
-    "wires": [["c231c8cd.975aa"]]
+    "wires": [
+      [
+        "c231c8cd.975aa"
+      ]
+    ]
   },
   {
     "id": "9d60b753.7fcfc",
@@ -142,7 +162,11 @@
     "finalize": "",
     "x": 660,
     "y": 160,
-    "wires": [["13ee085f.be8d98"]]
+    "wires": [
+      [
+        "13ee085f.be8d98"
+      ]
+    ]
   },
   {
     "id": "c561e0d7.eb0998",
@@ -177,7 +201,12 @@
     "pretty": false,
     "x": 990,
     "y": 160,
-    "wires": [["408593f2.7ce534", "7000bdea.5b3c8c"]]
+    "wires": [
+      [
+        "408593f2.7ce534",
+        "7000bdea.5b3c8c"
+      ]
+    ]
   },
   {
     "id": "408593f2.7ce534",
@@ -219,7 +248,11 @@
     "org": "siemens",
     "x": 830,
     "y": 400,
-    "wires": [["67b35a2b.c82f54"]]
+    "wires": [
+      [
+        "67b35a2b.c82f54"
+      ]
+    ]
   },
   {
     "id": "b55ad1ad.1d31e8",
@@ -251,7 +284,12 @@
     "org": "siemens",
     "x": 370,
     "y": 400,
-    "wires": [["e0680050.bd51a", "d40d07c0.067dc8"]]
+    "wires": [
+      [
+        "e0680050.bd51a",
+        "d40d07c0.067dc8"
+      ]
+    ]
   },
   {
     "id": "e0680050.bd51a",
@@ -265,7 +303,12 @@
     "finalize": "",
     "x": 600,
     "y": 400,
-    "wires": [["cc9de0f5.cdc4e", "67cd84cb.b3012c"]]
+    "wires": [
+      [
+        "cc9de0f5.cdc4e",
+        "67cd84cb.b3012c"
+      ]
+    ]
   },
   {
     "id": "206e8e74.bad04a",
@@ -303,7 +346,11 @@
     "org": "siemens",
     "x": 810,
     "y": 600,
-    "wires": [["67b35a2b.c82f54"]]
+    "wires": [
+      [
+        "67b35a2b.c82f54"
+      ]
+    ]
   },
   {
     "id": "30279058.935348",
@@ -318,7 +365,11 @@
     "org": "siemens",
     "x": 370,
     "y": 600,
-    "wires": [["e483dac2.b82e5"]]
+    "wires": [
+      [
+        "e483dac2.b82e5"
+      ]
+    ]
   },
   {
     "id": "e483dac2.b82e5",
@@ -332,7 +383,11 @@
     "finalize": "",
     "x": 600,
     "y": 600,
-    "wires": [["d73768e8.892c4"]]
+    "wires": [
+      [
+        "d73768e8.892c4"
+      ]
+    ]
   },
   {
     "id": "fe2bcb9b.e56fb8",
@@ -352,10 +407,26 @@
     "property": "payload[0].measurement",
     "propertyType": "msg",
     "rules": [
-      { "t": "eq", "v": "powerdrive1", "vt": "str" },
-      { "t": "eq", "v": "powerdrive2", "vt": "str" },
-      { "t": "eq", "v": "voltagedrive3", "vt": "str" },
-      { "t": "eq", "v": "currentdrive3", "vt": "str" }
+      {
+        "t": "eq",
+        "v": "powerdrive1",
+        "vt": "str"
+      },
+      {
+        "t": "eq",
+        "v": "powerdrive2",
+        "vt": "str"
+      },
+      {
+        "t": "eq",
+        "v": "voltagedrive3",
+        "vt": "str"
+      },
+      {
+        "t": "eq",
+        "v": "currentdrive3",
+        "vt": "str"
+      }
     ],
     "checkall": "true",
     "repair": false,
@@ -363,10 +434,19 @@
     "x": 150,
     "y": 160,
     "wires": [
-      ["3a59b4bb.74773c"],
-      ["3a59b4bb.74773c"],
-      ["6e9cf99d.f4721", "4d240511.3cb51c"],
-      ["30279058.935348"]
+      [
+        "3a59b4bb.74773c"
+      ],
+      [
+        "3a59b4bb.74773c"
+      ],
+      [
+        "6e9cf99d.f4721",
+        "4d240511.3cb51c"
+      ],
+      [
+        "30279058.935348"
+      ]
     ]
   },
   {
@@ -381,7 +461,12 @@
     "finalize": "",
     "x": 1100,
     "y": 500,
-    "wires": [["b55ad1ad.1d31e8", "206e8e74.bad04a"]]
+    "wires": [
+      [
+        "b55ad1ad.1d31e8",
+        "206e8e74.bad04a"
+      ]
+    ]
   },
   {
     "id": "49c977da.a0dce",
@@ -397,7 +482,11 @@
     "inputs": 0,
     "x": 130,
     "y": 820,
-    "wires": [["b119df7b.43a088"]]
+    "wires": [
+      [
+        "b119df7b.43a088"
+      ]
+    ]
   },
   {
     "id": "f85bea86.d12e9",
@@ -426,7 +515,11 @@
     "pretty": false,
     "x": 510,
     "y": 820,
-    "wires": [["fbd3d4ca.35021"]]
+    "wires": [
+      [
+        "fbd3d4ca.35021"
+      ]
+    ]
   },
   {
     "id": "fbd3d4ca.35021",
@@ -441,7 +534,12 @@
     "libs": [],
     "x": 870,
     "y": 820,
-    "wires": [["8736d8c4.6a8dd8", "f85bea86.d12e9"]]
+    "wires": [
+      [
+        "8736d8c4.6a8dd8",
+        "f85bea86.d12e9"
+      ]
+    ]
   },
   {
     "id": "8736d8c4.6a8dd8",
@@ -472,7 +570,11 @@
     "inputs": 0,
     "x": 110,
     "y": 960,
-    "wires": [["9fe01ff4.3223f"]]
+    "wires": [
+      [
+        "9fe01ff4.3223f"
+      ]
+    ]
   },
   {
     "id": "e8bf4594.e0d068",
@@ -501,7 +603,11 @@
     "pretty": false,
     "x": 510,
     "y": 960,
-    "wires": [["e9d5781f.cd3a1"]]
+    "wires": [
+      [
+        "e9d5781f.cd3a1"
+      ]
+    ]
   },
   {
     "id": "e9d5781f.cd3a1",
@@ -516,7 +622,12 @@
     "libs": [],
     "x": 870,
     "y": 960,
-    "wires": [["36636dbd.e80eda", "e8bf4594.e0d068"]]
+    "wires": [
+      [
+        "36636dbd.e80eda",
+        "e8bf4594.e0d068"
+      ]
+    ]
   },
   {
     "id": "36636dbd.e80eda",
@@ -601,7 +712,7 @@
     "type": "mqtt in",
     "z": "3aa68cd31f41e50a",
     "name": "",
-    "topic": "raw_data/material_transistor_in_stock",
+    "topic": "raw_data/material_transistors_in_stock",
     "qos": "1",
     "datatype": "auto",
     "broker": "b6ec4c8d.61eac",
@@ -610,7 +721,11 @@
     "inputs": 0,
     "x": 430,
     "y": 180,
-    "wires": [["0a39a540ad0ced51"]]
+    "wires": [
+      [
+        "0a39a540ad0ced51"
+      ]
+    ]
   },
   {
     "id": "0a39a540ad0ced51",
@@ -622,7 +737,11 @@
     "pretty": false,
     "x": 670,
     "y": 180,
-    "wires": [["ba3613d28484653e"]]
+    "wires": [
+      [
+        "ba3613d28484653e"
+      ]
+    ]
   },
   {
     "id": "92cb9b5523e2d007",
@@ -671,7 +790,12 @@
     "libs": [],
     "x": 820,
     "y": 180,
-    "wires": [["80009f29d73828d7", "92cb9b5523e2d007"]]
+    "wires": [
+      [
+        "80009f29d73828d7",
+        "92cb9b5523e2d007"
+      ]
+    ]
   },
   {
     "id": "2efc4ec3c621966a",
@@ -687,7 +811,11 @@
     "inputs": 0,
     "x": 430,
     "y": 340,
-    "wires": [["f6cd6002a3b06185"]]
+    "wires": [
+      [
+        "f6cd6002a3b06185"
+      ]
+    ]
   },
   {
     "id": "f6cd6002a3b06185",
@@ -699,7 +827,11 @@
     "pretty": false,
     "x": 670,
     "y": 340,
-    "wires": [["4a31003625d5fec6"]]
+    "wires": [
+      [
+        "4a31003625d5fec6"
+      ]
+    ]
   },
   {
     "id": "200d9c7ba2143e31",
@@ -748,7 +880,12 @@
     "libs": [],
     "x": 820,
     "y": 340,
-    "wires": [["6e349c712d6394de", "200d9c7ba2143e31"]]
+    "wires": [
+      [
+        "6e349c712d6394de",
+        "200d9c7ba2143e31"
+      ]
+    ]
   },
   {
     "id": "284c9022318e58ca",
@@ -764,7 +901,11 @@
     "inputs": 0,
     "x": 430,
     "y": 500,
-    "wires": [["75f9c00d4013dbec"]]
+    "wires": [
+      [
+        "75f9c00d4013dbec"
+      ]
+    ]
   },
   {
     "id": "75f9c00d4013dbec",
@@ -776,7 +917,11 @@
     "pretty": false,
     "x": 670,
     "y": 500,
-    "wires": [["88abe7a3ca91ffdf"]]
+    "wires": [
+      [
+        "88abe7a3ca91ffdf"
+      ]
+    ]
   },
   {
     "id": "bedcb73dc9af2c90",
@@ -825,6 +970,11 @@
     "libs": [],
     "x": 820,
     "y": 500,
-    "wires": [["05c1ff0d8fd40bb0", "bedcb73dc9af2c90"]]
+    "wires": [
+      [
+        "05c1ff0d8fd40bb0",
+        "bedcb73dc9af2c90"
+      ]
+    ]
   }
 ]

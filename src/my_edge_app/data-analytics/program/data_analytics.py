@@ -83,17 +83,17 @@ class DataAnalyzer():
 
         if material_name == 'Transistor':
             self.logger.info('Transistor material consumed: {}'.format(components_used))
-            topic = 'raw_data/material_transistor_in_stock'
+            topic = 'raw_data/material_transistors_in_stock'
             self.n_transistors -= components_used
             payload = self.n_transistors
         elif material_name == 'Capacitor':
             self.logger.info('Capacitor material consumed: {}'.format(components_used))
-            topic = 'raw_data/material_capacitor_in_stock'
+            topic = 'raw_data/material_capacitors_in_stock'
             self.n_capacitors -= components_used
             payload = self.n_capacitors
         elif material_name == 'Resistor':
             self.logger.info('Resistor material consumed: {}'.format(components_used))
-            topic = 'raw_data/material_resistor_in_stock'
+            topic = 'raw_data/material_resistors_in_stock'
             self.n_resistors -= components_used
             payload = self.n_resistors
         else:
