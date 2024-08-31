@@ -55,7 +55,7 @@ class PickAndPlaceMachine:
                         self._material_used_event_handler(current_material, 1)
 
             if self._material_roll_empty_event_handler != None:
-                for material, roll in self._materials:
+                for material, roll in self._materials.items():
                     if roll.is_empty():
                         print(f"Material roll {material} is empty. Please refill to continue...")
                         self._material_roll_empty_event_handler(material)

@@ -15,8 +15,8 @@ PASSWORD = 'edge'
 # Define the topic you want to publish to
 TOPIC = 'raw_data/material_consumption'
 
-my_machine: PickAndPlaceMachine
-client: mqtt.Client
+my_machine: PickAndPlaceMachine = PickAndPlaceMachine("My Machine", [("Transistor", 100), ("Capacitor", 100), ("Resistor", 100)])
+client: mqtt.Client = mqtt.Client(MICRO_SERVICE_NAME)
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
@@ -24,8 +24,12 @@ def on_connect(client, userdata, flags, rc):
     else:
         print(f"Failed to connect, return code {rc}")
 
-def on_publish(client, userdata, mid):
-    print(f"Message {mid} published successfully.")
+def on_disconnect(client, userdata, rc):
+    if rc != 0:
+        print(f'Connection ended unexpectedly from broker, error code {rc}')
+
+def on_subscribe(client, userdata, mid, granted_qos):
+    print(f'Successfully subscribed ')
 
 def send_material_used_msg(material_name : str, components_used : int) -> None:
     msg = pickle.dumps((material_name, components_used))
@@ -35,16 +39,14 @@ def refill_material_roll(material_name : str) -> None:
     my_machine.refill_material(material_name, 100)
 
 def main():
-    client = mqtt.Client(MICRO_SERVICE_NAME)
     client.username_pw_set(USERNAME, PASSWORD)
 
     client.on_connect = on_connect
-    client.on_publish = on_publish
+    client.on_disconnect = on_disconnect
+    client.on_subscribe = on_subscribe
 
-    client.connect(BROKER_ADDRESS, BROKER_PORT, keepalive=60)
+    client.connect(BROKER_ADDRESS)
     client.loop_start()
-
-    my_machine = PickAndPlaceMachine("My Machine", [("Transistor", 100), ("Capacitor", 100), ("Resistor", 100)])
 
     my_machine.set_material_used_event_handler(send_material_used_msg)
     my_machine.set_material_roll_empty_event_handler(refill_material_roll)
