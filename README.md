@@ -80,9 +80,17 @@ To start the scenario, follow these steps:
    1. To do this, start by navigating to the `Dashboards` page.
    2. Click on `Create Dashboard`.
    3. Choose `Import Dashboard` from the dropdown menu.
+  
+
    4. Select our pre-build dashboard located at `src/my_edge_app/influxDB/components_dashboard.json`.
 
    This dashboard will display the real-time data being sent by Node-RED from the MQTT bus.
+   
+### Results
+
+As an intermediate result, the dashboard keeps track of the current number of transistors, capacitors and resistors.
+
+![image](https://github.com/user-attachments/assets/aab273ca-8e9b-4f7c-a44b-9d4d974fc3c1)
 
 ## License
 
