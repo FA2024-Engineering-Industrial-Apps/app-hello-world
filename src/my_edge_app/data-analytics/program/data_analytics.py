@@ -14,6 +14,7 @@ import sys
 import logging
 import statistics
 import json
+import pickle
 
 BROKER_ADDRESS='ie-databus'
 BROKER_PORT=1883
@@ -21,7 +22,6 @@ MICRO_SERVICE_NAME = 'data-analytics'
 """ Broker user and password for authtentification"""
 USERNAME='edge'
 PASSWORD='edge'
-TOPIC='raw_data/material_consumption'
 
 class DataAnalyzer():
     """
@@ -40,6 +40,11 @@ class DataAnalyzer():
         self.client.on_disconnect = self.on_disconnect
         self.client.on_subscribe = self.on_subscribe
         self.client.on_message = self.on_message
+
+        # number of components
+        self.n_capacitors = 50
+        self.n_resistors = 50
+        self.n_transistors = 50
 
     def on_connect(self, client, userdata, flags, rc):
         self.logger.info('Connected successfully to broker, response code {}'.format(rc))
@@ -112,6 +117,33 @@ class DataAnalyzer():
         # publish result back on MQTT topic 'MeanResult'
         self.client.publish(topic='MeanResult', payload=json.dumps(result))
         return
+    
+    def material_consumption(self, payload):
+        self.logger.info('calculating pick and place machine...')
+        # unpickle the payload
+        material_name, components_used = pickle.loads(payload)
+        topic = 'raw_data/material_consumption'
+
+        if material_name == 'Transistor':
+            self.logger.info('Transistor material consumed: {}'.format(components_used))
+            topic = 'raw_data/material_transistor_in_stock'
+            self.n_transistors -= components_used
+            payload = self.n_transistors
+        elif material_name == 'Capacitor':
+            self.logger.info('Capacitor material consumed: {}'.format(components_used))
+            topic = 'raw_data/material_capacitor_in_stock'
+            self.n_capacitors -= components_used
+            payload = self.n_capacitors
+        elif material_name == 'Resistor':
+            self.logger.info('Resistor material consumed: {}'.format(components_used))
+            topic = 'raw_data/material_resistor_in_stock'
+            self.n_resistors -= components_used
+            payload = self.n_resistors
+        else:
+            self.logger.error('Material not found')
+
+        self.client.publish(topic=topic, payload=payload, qos=1)
+        return
 
     def handle_data(self):        
         """
@@ -126,13 +158,17 @@ class DataAnalyzer():
             self.client.connect(BROKER_ADDRESS)
             self.client.loop_start()
             self.logger.info('Subscribe to topic StandardKpis')
-            self.subscribe(topic='StandardKpis', callback=self.standard_kpis)
+            self.subscribe(topic='raw_data/material_consumption', callback=self.material_consumption)
+            # self.subscribe(topic='StandardKpis', callback=self.standard_kpis)
             self.logger.info('Subscripe to topic Mean')
             self.subscribe(topic='Mean', callback=self.power_mean)
             self.logger.info('Finished subscription to topics')
             
 
-        except Excep
+        except Exception as e:
+            self.logger.error(str(e))
+
+
 if __name__ == '__main__':
     # configures basic logger
     logger = logging.getLogger( __name__ )
