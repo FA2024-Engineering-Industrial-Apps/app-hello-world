@@ -21,6 +21,7 @@ MICRO_SERVICE_NAME = 'data-analytics'
 """ Broker user and password for authtentification"""
 USERNAME='edge'
 PASSWORD='edge'
+TOPIC='raw_data/material_consumption'
 
 class DataAnalyzer():
     """
@@ -39,7 +40,6 @@ class DataAnalyzer():
         self.client.on_disconnect = self.on_disconnect
         self.client.on_subscribe = self.on_subscribe
         self.client.on_message = self.on_message
-        self.topic_callback = dict()
 
     def on_connect(self, client, userdata, flags, rc):
         self.logger.info('Connected successfully to broker, response code {}'.format(rc))
