@@ -43,9 +43,9 @@ class DataAnalyzer():
         self.topic_callback = dict()
 
         # number of components
-        self.n_capacitors = 50
-        self.n_resistors = 50
-        self.n_transistors = 50
+        self.n_transistors = 100
+        self.n_capacitors = 200
+        self.n_resistors = 300
 
     def on_connect(self, client, userdata, flags, rc):
         self.logger.info('Connected successfully to broker, response code {}'.format(rc))
