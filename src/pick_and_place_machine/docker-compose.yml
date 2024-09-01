@@ -12,7 +12,7 @@ services:
         https_proxy: $https_proxy
     container_name: pick-and-place-machine
     mem_limit: 350m
-    restart: unless-stopped             # always restarts (see overview page 12 Industrial Edge Developer Guide)
+    restart: no
     environment:                        # Environment variables available at container run-time
       http_proxy: $http_proxy           # Proxy url's from environment
       https_proxy: $https_proxy

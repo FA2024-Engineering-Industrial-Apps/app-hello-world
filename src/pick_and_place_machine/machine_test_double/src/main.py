@@ -35,9 +35,8 @@ def send_material_used_msg(material_name : str, components_used : int) -> None:
     msg = pickle.dumps((material_name, components_used))
     client.publish(TOPIC, payload=msg, qos=2)
 
-def refill_material_roll(material_name : str) -> None:
-    #my_machine.refill_material(material_name, 100)
-    pass
+def on_roll_empty(material_name : str) -> None:
+    my_machine.shutdown()
 
 def main():
     client.username_pw_set(USERNAME, PASSWORD)
@@ -50,7 +49,7 @@ def main():
     client.loop_start()
 
     my_machine.set_material_used_event_handler(send_material_used_msg)
-    my_machine.set_material_roll_empty_event_handler(refill_material_roll)
+    my_machine.set_material_roll_empty_event_handler(on_roll_empty)
 
     my_machine.start()
 
