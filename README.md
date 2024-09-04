@@ -56,7 +56,7 @@ To start the scenario, follow these steps:
 3. **Configure Node RED**
 
    Once the containers are running, you need to set up Node RED to forward the data to InfluxDB.
-   To do this go to [http://localhost:38080](http://localhost:38080).
+   To do this go to [http://localhost:33080](http://localhost:33080).
 
    1. Open the menu in the right top corner.
    2. Click on `Configuration Nodes`.
