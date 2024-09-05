@@ -106,9 +106,10 @@ project
 │   └───influxDB
 │       │   drive_kpi_calc_dashboard.json
 │       │   
+
 ```
 
-REMEMBER, you can only modify the files in the folder `my_edge_app/program` or add some files and folders to realize some of the tasks' functions. Remember, **other file contents** cannot be changed. As a result, you should return ALL the files inside the whole project (not just files in `my_edge_app/program`!!) as a zip file after generating the code.
+Remember, you can only add some files and folders to realize some of the tasks' functions.  **Other files** should keep the exact content. As a result, you should return ALL the files inside the whole project (not just files in `my_edge_app/program`!!) as a zip file after generating the code.
 
 Your first task is to build a pick-and-place machine that uses materials from different material rolls. This IE app should keep track of the current number of transistors, capacitors, and resistors.
 
@@ -162,46 +163,46 @@ project
 │   │   │   │    machine.py   
 │   │   │   │    materialroll.py   
 │   │   │   │   
-
+start_environment.sh
 
 ```
 
 That means you should add a folder called `pick_and_place_machine`.
 Inside the folder pick_and_place_machine, you should create a`docker-compose.yml` file, a hidden`.env` file, and a subfolder `machine_test_double`.
 
-The `docker-compose.yml` should be as follows
+The `docker-compose.yml` inside folder `pick_and_place_machine` should be as follows
 ```Dockerfile
 version: '2.4' # docker-compose version is set to 2.4
 
 services:
 
 ###### PICK-AND-PLACE-MACHINE ######
-pick-and-place-machine:
-	build:
-		context: ./machine_test_double
-		args:
-			BASE_IMAGE: $BASE_IMAGE #
-			http_proxy: $http_proxy # Proxy url's from environment
-			https_proxy: $https_proxy
-	container_name: pick-and-place-machine
-	mem_limit: 350m
-	restart: no
-	environment: # Environment variables available at container run-time
-		http_proxy: $http_proxy # Proxy url's from environment
-		https_proxy: $https_proxy
-	logging: # allow logging
-		options: # we use best pactice here as limiting file size and rolling mechanism
-			max-size: "10m" # File size is 10MB
-			max-file: "2" # only 2 files created before rolling mechanism applies
-	networks: # define networks connected to container 'data-analytics'
-	proxy-redirect: # Name of the network
+  pick-and-place-machine:
+    build:
+      context: ./machine_test_double
+      args:
+        BASE_IMAGE: $BASE_IMAGE #
+        http_proxy: $http_proxy # Proxy url's from environment
+        https_proxy: $https_proxy
+    container_name: pick-and-place-machine
+    mem_limit: 350m
+    restart: no
+    environment: # Environment variables available at container run-time
+      http_proxy: $http_proxy # Proxy url's from environment
+      https_proxy: $https_proxy
+    logging: # allow logging
+      options: # we use best pactice here as limiting file size and rolling mechanism
+        max-size: "10m" # File size is 10MB
+        max-file: "2" # only 2 files created before rolling mechanism applies
+    networks: # define networks connected to container 'data-analytics'
+    proxy-redirect: # Name of the network
 
-###### NETWORK CONFIG ######
-networks: # Network interface configuration
-	proxy-redirect: # Reference 'proxy-redirect' as predefined network
-		external:
-			name: proxy-redirect
-		driver: bridge
+  ###### NETWORK CONFIG ######
+  networks: # Network interface configuration
+    proxy-redirect: # Reference 'proxy-redirect' as predefined network
+      external:
+        name: proxy-redirect
+      driver: bridge
 
 ###### VOLUMES ######
 volumes: # Volumes for containers
@@ -282,11 +283,23 @@ This file serves as the main execution script for the machine. It connects the m
   - `send_material_used_msg(material_name, components_used)`: Sends a message to the MQTT broker whenever materials are consumed.
   - `on_roll_empty(material_name)`: Shuts down the machine if a material roll is empty.
   - `main()`: The main function initializes the machine, sets up MQTT communication, and starts the machine, keeping it running as long as materials are available.
- 
+
+`start_environment.sh` should starts the example environment by starting all docker containers in detached mode.
+```bash
+#!/bin/bash
+
+# This scripts starts the example environment by starting all docker containers in detached mode.
+docker compose -f src/mqtt_broker_mosquitto/docker-compose.yml up -d --build
+docker compose -f src/node_red/docker-compose.yml up -d --build
+docker compose -f src/my_edge_app/docker-compose.yml up -d --build
+docker compose -f src/pick_and_place_machine/docker-compose.yml up -d --build
+
+docker ps
+```
 
 ##### Example Dialogue
 
-[link](https://chatgpt.com/share/325f7589-e12b-4db0-b0c8-bc313ee61903)
+[link](https://chatgpt.com/share/1a7832e7-995e-4ec0-bacb-1b7cb2218f67)
 
 Returned package structure
 ![[img/pick_and_place_machine.png]]
