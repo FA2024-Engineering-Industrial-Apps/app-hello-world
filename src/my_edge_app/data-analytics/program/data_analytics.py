@@ -9,7 +9,7 @@ bivariate normal distributed datasets.
 
 """
 
-import paho.mqtt.client as mqtt
+from mqtt_lib import MQTTClient
 import sys
 import logging
 import statistics
@@ -35,49 +35,17 @@ class DataAnalyzer():
         
         logger_name = '{}.{}'.format(logger_parent,__name__)
         self.logger = logging.getLogger(logger_name)
-        self.client = mqtt.Client(MICRO_SERVICE_NAME)
-        self.client.on_connect = self.on_connect
-        self.client.on_disconnect = self.on_disconnect
-        self.client.on_subscribe = self.on_subscribe
-        self.client.on_message = self.on_message
-        self.topic_callback = dict()
+        self.client = MQTTClient(BROKER_ADDRESS, BROKER_PORT, USERNAME, PASSWORD, MICRO_SERVICE_NAME)
 
         # number of components
         self.n_transistors = 100
         self.n_capacitors = 200
         self.n_resistors = 300
-
-    def on_connect(self, client, userdata, flags, rc):
-        self.logger.info('Connected successfully to broker, response code {}'.format(rc))
-
-    def on_disconnect(self, client, userdata, rc):
-        if rc != 0:
-            self.logger.warning('Connection ended unexpectedly from broker, error code {}'.format(rc))
-
-    def on_subscribe(self, client, userdata, mid, granted_qos):
-        
-        self.logger.info('successfully subscribed ')
-
-    def on_message(self, client, userdata, message):
-        self.logger.info('New message received on topic: {}'.format(message.topic))
-        try:
-            self.topic_callback[message.topic](message.payload)
-        except Exception as err:
-            self.logger.error('An error ocurred while hanlding new message of {}: {}'.format(message.topic, err))
-
-    def subscribe(self, topic, callback):
-        """ Subscribes to given topic, assigning a callback function that
-        handles the received payload
-
-        :topic:     string with the topic to subscribe
-        :callback:  function to assign the payload received
-        """
-        self.topic_callback.update({topic:callback})
-        self.client.subscribe(topic)
     
-    def material_consumption(self, payload):
+    def material_consumption(self, message):
         self.logger.info('calculating pick and place machine...')
         # unpickle the payload
+        payload = message.payload
         material_name, components_used = pickle.loads(payload)
         topic = 'raw_data/material_consumption'
 
@@ -111,11 +79,8 @@ class DataAnalyzer():
         
         self.logger.info('Preparing Mqtt Connection')
         try:
-            self.client.username_pw_set(USERNAME, PASSWORD)
-            self.client.connect(BROKER_ADDRESS)
-            self.client.loop_start()
             self.logger.info('Subscribe to topic raw_data/material_consumption')
-            self.subscribe(topic='raw_data/material_consumption', callback=self.material_consumption)
+            self.client.subscribe('raw_data/material_consumption', self.material_consumption)
             self.logger.info('Finished subscription to topics')
 
         except Exception as e:
